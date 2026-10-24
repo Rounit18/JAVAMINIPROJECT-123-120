@@ -1,0 +1,28 @@
+# Environment variables and secrets
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Node.js dependencies
+**/node_modules/
+
+# Next.js generated files
+**/.next/
+**/out/
+**/.vercel/
+
+# Java and Maven generated files
+**/target/
+
+# Gradle generated files
+**/.gradle/
+**/build/
+
+# IDE files
+**/.vscode/
+**/.idea/
+
+# Logs
+*.log
+npm-debug.log*

@@ -6,6 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class PatientService {
 
@@ -43,5 +45,33 @@ public class PatientService {
         );
 
         return patientRepository.save(patient);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Patient> authenticatePatient(
+            String email,
+            String rawPassword
+    ) {
+        String normalizedEmail = email.trim().toLowerCase();
+
+        Optional<Patient> patientOptional =
+                patientRepository.findByEmail(normalizedEmail);
+
+        if (patientOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Patient patient = patientOptional.get();
+
+        boolean passwordMatches = passwordEncoder.matches(
+                rawPassword,
+                patient.getPassword()
+        );
+
+        if (!passwordMatches) {
+            return Optional.empty();
+        }
+
+        return Optional.of(patient);
     }
 }

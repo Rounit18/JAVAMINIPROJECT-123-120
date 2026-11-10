@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,6 +40,9 @@ public class Doctor {
     @Column(nullable = false)
     private boolean available = true;
 
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal consultationFee = new BigDecimal("500.00");
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -60,11 +64,16 @@ public class Doctor {
         this.qualification = qualification;
         this.experienceYears = experienceYears;
         this.available = true;
+        this.consultationFee = new BigDecimal("500.00");
     }
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+
+        if (consultationFee == null) {
+            consultationFee = new BigDecimal("500.00");
+        }
     }
 
     public Long getId() {
@@ -125,6 +134,14 @@ public class Doctor {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public BigDecimal getConsultationFee() {
+        return consultationFee;
+    }
+
+    public void setConsultationFee(BigDecimal consultationFee) {
+        this.consultationFee = consultationFee;
     }
 
     public LocalDateTime getCreatedAt() {

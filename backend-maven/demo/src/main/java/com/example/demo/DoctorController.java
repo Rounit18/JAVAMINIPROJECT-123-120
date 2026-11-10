@@ -58,7 +58,8 @@ public class DoctorController {
                             "email", doctor.getEmail(),
                             "specialization", doctor.getSpecialization(),
                             "qualification", doctor.getQualification(),
-                            "experienceYears", doctor.getExperienceYears()
+                            "experienceYears", doctor.getExperienceYears(),
+                            "consultationFee", doctor.getConsultationFee()
                     ));
 
         } catch (IllegalArgumentException exception) {
@@ -129,7 +130,8 @@ public class DoctorController {
                                 "email", doctor.getEmail(),
                                 "specialization", doctor.getSpecialization(),
                                 "qualification", doctor.getQualification(),
-                                "experienceYears", doctor.getExperienceYears()
+                                "experienceYears", doctor.getExperienceYears(),
+                                "consultationFee", doctor.getConsultationFee()
                         )
                 )
         );
@@ -149,7 +151,8 @@ public class DoctorController {
                         "email", doctor.getEmail(),
                         "specialization", doctor.getSpecialization(),
                         "qualification", doctor.getQualification(),
-                        "experienceYears", doctor.getExperienceYears()
+                        "experienceYears", doctor.getExperienceYears(),
+                        "consultationFee", doctor.getConsultationFee()
                 ))
                 .toList();
 

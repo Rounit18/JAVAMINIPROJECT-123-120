@@ -16,6 +16,22 @@ public class AppointmentService {
     }
 
     public Appointment bookAppointment(Appointment appointment) {
+
+        boolean alreadyBooked =
+                appointmentRepository
+                        .existsByDoctorIdAndAppointmentDateAndAppointmentTimeAndStatus(
+                                appointment.getDoctor().getId(),
+                                appointment.getAppointmentDate(),
+                                appointment.getAppointmentTime(),
+                                "BOOKED"
+                        );
+
+        if (alreadyBooked) {
+            throw new IllegalArgumentException(
+                    "This doctor already has an appointment at the selected date and time."
+            );
+        }
+
         return appointmentRepository.save(appointment);
     }
 

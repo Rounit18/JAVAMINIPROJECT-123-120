@@ -22,20 +22,24 @@ public class SecurityConfig {
 
         http
                 .cors(Customizer.withDefaults())
+
                 .csrf(csrf -> csrf.disable())
+
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
+
                 .authorizeHttpRequests(authorize -> authorize
 
-                        // Public API
+                        // Public health API
                         .requestMatchers("/api/health").permitAll()
 
                         // Patient registration and login
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/patients/register",
-                                "/api/patients/login"
+                                "/api/patients/login",
+                                "/api/patients/logout"
                         ).permitAll()
 
                         // Doctor registration and login
@@ -45,11 +49,23 @@ public class SecurityConfig {
                                 "/api/doctors/login"
                         ).permitAll()
 
-                        // Allow authenticated users to view doctors
+                        // Public doctor directory
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/doctors"
-                        ).authenticated()
+                        ).permitAll()
+
+                        // Only patients can book appointments
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/appointments/book"
+                        ).hasRole("PATIENT")
+
+                        // Only doctors can view their appointments
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/appointments/doctor"
+                        ).hasRole("DOCTOR")
 
                         // Patient-only APIs
                         .requestMatchers("/api/patients/**")
@@ -62,7 +78,9 @@ public class SecurityConfig {
                         // All remaining endpoints require authentication
                         .anyRequest().authenticated()
                 )
+
                 .httpBasic(basic -> basic.disable())
+
                 .formLogin(form -> form.disable());
 
         return http.build();

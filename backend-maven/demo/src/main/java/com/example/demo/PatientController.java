@@ -134,12 +134,12 @@ public class PatientController {
             session.invalidate();
         }
 
-        return ResponseEntity.ok(
-                Map.of(
-                        "status", "success",
-                        "message", "Logged out successfully."
-                )
-        );
+        Map<String, String> response = new HashMap<>();
+
+        response.put("status", "success");
+        response.put("message", "Logged out successfully.");
+
+        return ResponseEntity.ok(response);
     }
 
     // ================= GET CURRENT PATIENT =================

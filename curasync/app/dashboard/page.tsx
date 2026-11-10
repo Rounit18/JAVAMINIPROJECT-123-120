@@ -94,7 +94,6 @@ export default function DashboardPage() {
               {email}
             </span>
 
-            {/* My Profile Button */}
             <Link
               href="/profile"
               className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
@@ -102,7 +101,6 @@ export default function DashboardPage() {
               My Profile
             </Link>
 
-            {/* Logout Button */}
             <button
               onClick={handleLogout}
               disabled={loggingOut}
@@ -142,26 +140,26 @@ export default function DashboardPage() {
           <DashboardCard
             icon="📅"
             title="Appointments"
-            description="Your appointment management section."
+            description="Manage your appointments and view upcoming visits."
           />
 
           <DashboardCard
             icon="🩺"
             title="Find Doctors"
-            description="Your doctor discovery section."
+            description="Browse registered doctors and book an appointment."
+            href="/doctors"
           />
 
           <DashboardCard
             icon="📋"
             title="Medical Records"
-            description="Your medical records section."
+            description="Access your medical records and treatment history."
           />
         </div>
 
         <p className="mt-10 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800">
-          This is an early dashboard prototype. The cards are placeholders;
-          appointment booking, doctor discovery, and medical records are not
-          connected yet.
+          CuraSync is currently under development. More healthcare features
+          will be added soon.
         </p>
       </section>
     </main>
@@ -172,13 +170,15 @@ function DashboardCard({
   icon,
   title,
   description,
+  href,
 }: {
   icon: string;
   title: string;
   description: string;
+  href?: string;
 }) {
-  return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+  const cardContent = (
+    <>
       <div className="text-3xl">{icon}</div>
 
       <h3 className="mt-4 text-lg font-bold text-slate-900">{title}</h3>
@@ -186,6 +186,29 @@ function DashboardCard({
       <p className="mt-2 text-sm leading-6 text-slate-500">
         {description}
       </p>
+
+      {href && (
+        <p className="mt-4 text-sm font-semibold text-blue-600">
+          Browse Doctors →
+        </p>
+      )}
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="block rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
+      >
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return (
+    <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      {cardContent}
     </article>
   );
 }

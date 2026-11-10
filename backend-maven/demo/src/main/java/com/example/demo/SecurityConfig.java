@@ -27,14 +27,39 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
                 .authorizeHttpRequests(authorize -> authorize
+
+                        // Public API
                         .requestMatchers("/api/health").permitAll()
+
+                        // Patient registration and login
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/patients/register",
                                 "/api/patients/login"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/patients/logout")
-                        .authenticated()
+
+                        // Doctor registration and login
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/doctors/register",
+                                "/api/doctors/login"
+                        ).permitAll()
+
+                        // Allow authenticated users to view doctors
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/doctors"
+                        ).authenticated()
+
+                        // Patient-only APIs
+                        .requestMatchers("/api/patients/**")
+                        .hasRole("PATIENT")
+
+                        // Doctor-only APIs
+                        .requestMatchers("/api/doctors/**")
+                        .hasRole("DOCTOR")
+
+                        // All remaining endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 .httpBasic(basic -> basic.disable())
@@ -45,6 +70,7 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(
@@ -69,4 +95,3 @@ public class SecurityConfig {
         return source;
     }
 }
-

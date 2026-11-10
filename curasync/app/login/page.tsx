@@ -25,15 +25,16 @@ setLoading(true);
 
 try {
   const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: email.trim(),
-      password,
-    }),
-  });
+  method: "POST",
+  credentials: "include",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    email: email.trim(),
+    password,
+  }),
+});
 
   const data = await response.json().catch(() => null);
 

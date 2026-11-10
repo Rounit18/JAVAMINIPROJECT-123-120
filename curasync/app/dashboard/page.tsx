@@ -1,8 +1,86 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+const API_URL = "http://localhost:8080/api/patients/me";
+const LOGOUT_URL = "http://localhost:8080/api/patients/logout";
 
 export default function DashboardPage() {
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    async function checkSession() {
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          router.replace("/login");
+          return;
+        }
+
+        const data = await response.json();
+
+        if (data?.status !== "success" || !data?.email) {
+          router.replace("/login");
+          return;
+        }
+
+        setEmail(data.email);
+      } catch {
+        router.replace("/login");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    checkSession();
+  }, [router]);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+
+    try {
+      const response = await fetch(LOGOUT_URL, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        router.replace("/login");
+        router.refresh();
+      } else {
+        setLoggingOut(false);
+        alert("Could not log out. Please try again.");
+      }
+    } catch {
+      setLoggingOut(false);
+      alert("Could not connect to the server.");
+    }
+  }
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-50">
+        <p className="text-lg font-semibold text-blue-600">
+          Checking your patient session...
+        </p>
+      </main>
+    );
+  }
+
+  if (!email) {
+    return null;
+  }
+
   return (
     <main className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
@@ -11,12 +89,19 @@ export default function DashboardPage() {
             Cura<span className="text-blue-600">Sync</span>
           </Link>
 
-          <Link
-            href="/login"
-            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-          >
-            Login page
-          </Link>
+          <div className="flex items-center gap-4">
+            <span className="hidden text-sm font-medium text-slate-600 sm:block">
+              {email}
+            </span>
+
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-60"
+            >
+              {loggingOut ? "Logging out..." : "Logout"}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -33,6 +118,10 @@ export default function DashboardPage() {
           <p className="mt-4 max-w-2xl leading-7 text-blue-50">
             Your healthcare journey, connected. Manage your healthcare
             activities from one convenient place.
+          </p>
+
+          <p className="mt-5 text-sm font-medium text-blue-100">
+            Logged in as: {email}
           </p>
         </div>
 
@@ -91,4 +180,3 @@ function DashboardCard({
     </article>
   );
 }
-

@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Patient;
 import com.example.demo.repository.PatientRepository;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,5 +74,40 @@ public class PatientService {
         }
 
         return Optional.of(patient);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Patient> getPatientByEmail(String email) {
+        String normalizedEmail = email.trim().toLowerCase();
+
+        return patientRepository.findByEmail(normalizedEmail);
+    }
+
+    @Transactional
+    public Patient updatePatientName(String email, String fullName) {
+        String normalizedEmail = email.trim().toLowerCase();
+        String normalizedFullName = fullName.trim();
+
+        if (normalizedFullName.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Full name cannot be empty."
+            );
+        }
+
+        if (normalizedFullName.length() > 100) {
+            throw new IllegalArgumentException(
+                    "Full name cannot exceed 100 characters."
+            );
+        }
+
+        Patient patient = patientRepository
+                .findByEmail(normalizedEmail)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Patient account not found."
+                ));
+
+        patient.setFullName(normalizedFullName);
+
+        return patientRepository.save(patient);
     }
 }
